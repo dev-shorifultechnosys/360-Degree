@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>360° Boat Viewer Demo</title>
+  <style>
+    body { background:#111; color:#fff; font-family:Arial, sans-serif; margin:0; display:flex; justify-content:center; align-items:center; height:100vh; }
+    .viewer { position:relative; width:80%; max-width:800px; aspect-ratio:16/9; background:#000; overflow:hidden; border-radius:12px; }
+    .viewer img { position:absolute; top:0; left:0; width:100%; height:100%; object-fit:contain; display:none; user-select:none; pointer-events:none; }
+    .viewer img.active { display:block; }
+    .controls { position:absolute; bottom:10px; left:50%; transform:translateX(-50%); display:flex; gap:10px; }
+    .controls button { padding:6px 12px; border:none; border-radius:6px; cursor:pointer; font-size:14px; }
+  </style>
+</head>
+<body>
+
+<div class="viewer" id="viewer">
+  <img src="https://revivalgleam.com/wp-content/uploads/2025/09/Eliza-J-rear-view-1.jpg" class="active" alt="Boat View 1">
+  <img src="https://revivalgleam.com/wp-content/uploads/2025/09/7.jpg" alt="Boat View 2">
+  <img src="https://revivalgleam.com/wp-content/uploads/2025/09/6.jpg" alt="Boat View 3">
+  <img src="https://revivalgleam.com/wp-content/uploads/2025/09/5.jpg" alt="Boat View 4">
+  <img src="https://revivalgleam.com/wp-content/uploads/2025/09/3.jpg" alt="Boat View 5">
+  <img src="https://revivalgleam.com/wp-content/uploads/2025/09/2.jpg" alt="Boat View 6">
+  <img src="https://revivalgleam.com/wp-content/uploads/2025/09/1.jpg" alt="Boat View 7">
+  <img src="https://revivalgleam.com/wp-content/uploads/2025/09/Untitled2.jpg" alt="Boat View 8">
+  <img src="https://revivalgleam.com/wp-content/uploads/2025/09/Untitled.jpg" alt="Boat View 9">
+  <div class="controls">
+    <button onclick="toggleSize()">Toggle Size</button>
+    <button onclick="toggleOrient()">Toggle Orientation</button>
+    <button onclick="resetView()">Reset</button>
+  </div>
+</div>
+
+<script>
+const viewer = document.getElementById('viewer');
+const images = viewer.querySelectorAll('img');
+let current = 0;
+let isDragging = false;
+let lastX = 0;
+
+viewer.addEventListener('mousedown', startDrag);
+viewer.addEventListener('touchstart', startDrag);
+
+function startDrag(e) {
+  isDragging = true;
+  lastX = e.touches ? e.touches[0].clientX : e.clientX;
+  window.addEventListener('mousemove', onDrag);
+  window.addEventListener('mouseup', stopDrag);
+  window.addEventListener('touchmove', onDrag);
+  window.addEventListener('touchend', stopDrag);
+}
+
+function onDrag(e) {
+  if (!isDragging) return;
+  const x = e.touches ? e.touches[0].clientX : e.clientX;
+  const dx = x - lastX;
+  if (Math.abs(dx) > 30) {
+    changeFrame(dx > 0 ? 1 : -1);
+    lastX = x;
+  }
+}
+
+function stopDrag() {
+  isDragging = false;
+  window.removeEventListener('mousemove', onDrag);
+  window.removeEventListener('mouseup', stopDrag);
+  window.removeEventListener('touchmove', onDrag);
+  window.removeEventListener('touchend', stopDrag);
+}
+
+function changeFrame(direction) {
+  images[current].classList.remove('active');
+  current = (current + direction + images.length) % images.length;
+  images[current].classList.add('active');
+}
+
+// Controls
+function toggleSize(){
+  viewer.style.width = viewer.style.width === '50%' ? '80%' : '50%';
+}
+function toggleOrient(){
+  viewer.style.aspectRatio = viewer.style.aspectRatio === '9/16' ? '16/9' : '9/16';
+}
+function resetView(){
+  viewer.style.width = '80%';
+  viewer.style.aspectRatio = '16/9';
+}
+</script>
+
+</body>
+</html>
